@@ -28,24 +28,26 @@ app.post("/api/users", async (req, res) => {
     const base64Email = req.body.base64Email
 
     await set(ref(db, `users/${base64Email}`), {
-        email: email
+        email: email,
+        password: password
     })
 
     await createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
-        const user = userCredential.user
         res.json({code: axios.HttpStatusCode.Ok})
     }).catch((error) => {
         res.json({errorCode: error.code, message: error.message})
     })
 })
 
-app.post("/api/user/:username", async (req, res) => {
+app.post("/api/user/:email", async (req, res) => {
     const email = req.body.email
     const password = req.body.password
 
     await signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
         const user = userCredential.user
-        res.json({code: res.statusCode, user: user})
+        user.getIdToken(true).then(token => {
+            res.json({code: axios.HttpStatusCode.Ok, userToken: token})
+        })
     }).catch((error) => {
         res.json({code: error.code, message: error.message})
     })
