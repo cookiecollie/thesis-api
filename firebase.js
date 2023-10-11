@@ -2,6 +2,7 @@
 const { initializeApp } = require("firebase/app")
 const { getAuth } = require("firebase/auth")
 const { getDatabase } = require("firebase/database")
+const { getStorage } = require("firebase/storage")
 require("dotenv").config()
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -14,7 +15,8 @@ const firebaseConfig = {
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.MESSAGING_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
-  databaseURL: process.env.FIREBASE_DB_URL
+  databaseURL: process.env.FIREBASE_DB_URL,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET
 };
 
 // Initialize Firebase
@@ -22,4 +24,5 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app)
 const db = getDatabase(app)
-module.exports = {auth, db}
+const storage = getStorage(app)
+module.exports = {auth, db, storage}
