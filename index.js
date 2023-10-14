@@ -74,10 +74,18 @@ app.post("/api/user/:email/project/:project", async (req, res) => {
     const base64Email = req.params.email
     const projName = req.params.project
 
-    const saveLocationRef = stRef(storage, `${base64Email}/${projName}.json`)
-
-    uploadString(saveLocationRef, JSON.stringify(req.body.project)).then(() => {
+    await set(dbRef(db, `users/${base64Email}/projects/${projName}`), req.body).then(() => {
         res.json({code: axios.HttpStatusCode.Ok, message: "Upload successfully!"})
+    }).catch((error) => {
+        res.json({code: error.code, message: error.message})
+    })
+})
+
+app.get("/api/user/:email/projects", async (req, res) => {
+    const userUID = req.params.email
+
+    await get(child(databaseRef, `users/${userUID}/projects`)).then((value) => {
+        res.json({code: axios.HttpStatusCode.Ok, projects: value.val()})
     }).catch((error) => {
         res.json({code: error.code, message: error.message})
     })
