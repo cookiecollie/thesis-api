@@ -3,7 +3,7 @@ const cors = require("cors")
 const axios = require("axios")
 const { auth, db, storage } = require("./firebase")
 const { signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } = require("firebase/auth")
-const { ref: dbRef, get, child, set } = require("firebase/database")
+const { ref: dbRef, get, child, set, remove } = require("firebase/database")
 const { ref: stRef, uploadBytes, uploadString } = require("firebase/storage")
 require("dotenv").config()
 
@@ -89,6 +89,13 @@ app.get("/api/user/:email/projects", async (req, res) => {
     }).catch((error) => {
         res.json({code: error.code, message: error.message})
     })
+})
+
+app.delete("/api/user/:userUID/project/:name", async (req, res) => {
+    const userUID = req.params.userUID
+    const projName = req.params.name
+
+    await remove(dbRef(db, `users/${userUID}/projects/${projName}`))
 })
 
 app.listen(process.env.PORT)
