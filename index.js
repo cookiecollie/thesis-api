@@ -20,7 +20,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
 app.get("/", (req, res) => {
-    res.json({result: res.statusCode, message: "Success!"})
+    res.status(axios.HttpStatusCode.Ok).send({message: "Success!"})
 })
 
 const storageRef = stRef(storage)
