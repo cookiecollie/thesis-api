@@ -98,6 +98,19 @@ app.delete("/api/user/:userUID/project/:name", async (req, res) => {
     await remove(dbRef(db, `users/${userUID}/projects/${projName}`))
 })
 
+app.post("/api/user/:userUID/project/:name/objects", async (req, res) => {
+    const userUID = req.params.userUID
+    const projName = req.params.name
+
+    const userRoomRef = child(databaseRef, `users/${userUID}/projects/${projName}/room/objects`)
+
+    await set(userRoomRef, req.body).then(() => {
+        res.json({code: axios.HttpStatusCode.Ok})
+    }).catch((error) => {
+        res.json({code: error.code, message: error.message})
+    })
+})
+
 app.listen(process.env.PORT)
 
 module.exports = app
