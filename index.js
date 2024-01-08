@@ -31,7 +31,7 @@ app.post("/api/users", async (req, res) => {
     const password = req.body.password
     const base64Email = req.body.base64Email
 
-    await set(dbRef(db, `users/${base64Email}`), {
+    await set(dbRef(db, `test/${base64Email}`), {
         email: email,
         password: password
     })
