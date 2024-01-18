@@ -111,6 +111,21 @@ app.post("/api/user/:userUID/project/:name/objects", async (req, res) => {
     })
 })
 
+app.post("/api/user/:userUID/models", async (req, res) => {
+    const userUID = req.params.userUID
+
+    const modelName = req.body.modelName
+    const model = req.body.model
+
+    const uploadLocationRef = stRef(storage, `${userUID}/${modelName}.glb`)
+
+    uploadBytes(uploadLocationRef, model).then(() => {
+        res.json({code: axios.HttpStatusCode.Ok})
+    }).catch((error) => {
+        res.json({error: error})
+    })
+})
+
 app.listen(process.env.PORT)
 
 module.exports = app
