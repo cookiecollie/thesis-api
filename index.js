@@ -4,7 +4,7 @@ const axios = require("axios")
 const { auth, db, storage } = require("./firebase")
 const { signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } = require("firebase/auth")
 const { ref: dbRef, get, child, set, remove } = require("firebase/database")
-const { ref: stRef, uploadBytes, uploadString } = require("firebase/storage")
+const { ref: stRef, uploadBytes, uploadString, listAll } = require("firebase/storage")
 require("dotenv").config()
 
 const app = express()
@@ -121,6 +121,23 @@ app.post("/api/user/:userUID/models", async (req, res) => {
 
     uploadBytes(uploadLocationRef, model).then(() => {
         res.json({code: axios.HttpStatusCode.Ok})
+    }).catch((error) => {
+        res.json({error: error})
+    })
+})
+
+app.get("/api/user/:userUID/models", async (req, res) => {
+    const userUID = req.params.userUID
+    const storageLocRef = stRef(storage, `${userUID}`)
+
+    const files = []
+
+    await listAll(storageLocRef).then((items) => {
+        items.items.forEach((file) => {
+            files.push(file.name)
+        })
+
+        res.json({code: axios.HttpStatusCode.Ok, files: files})
     }).catch((error) => {
         res.json({error: error})
     })
