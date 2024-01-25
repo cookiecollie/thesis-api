@@ -1,10 +1,11 @@
 const express = require("express")
 const cors = require("cors")
 const axios = require("axios")
+const https = require("https")
 const { auth, db, storage } = require("./firebase")
 const { signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } = require("firebase/auth")
 const { ref: dbRef, get, child, set, remove } = require("firebase/database")
-const { ref: stRef, uploadBytes, uploadString, listAll } = require("firebase/storage")
+const { ref: stRef, uploadBytes, uploadString, listAll, getDownloadURL, getStream, getBlob, getBytes } = require("firebase/storage")
 require("dotenv").config()
 
 const app = express()
@@ -141,6 +142,16 @@ app.get("/api/user/:userUID/models", async (req, res) => {
     }).catch((error) => {
         res.json({error: error})
     })
+})
+
+app.get("/api/user/:userUID/model/:modelName", async (req, res) => {
+    const userUID = req.params.userUID
+    const modelName = req.params.modelName
+    const downloadLocRef = stRef(storage, `${userUID}/${modelName}`)
+
+    await getDownloadURL(downloadLocRef).then((url) => {
+        res.json({code: axios.HttpStatusCode.Ok, downloadURL: url})
+    }).catch((error) => console.log(error))
 })
 
 app.listen(process.env.PORT)
