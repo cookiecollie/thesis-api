@@ -4,7 +4,7 @@ const axios = require("axios")
 const https = require("https")
 const { auth, db, storage } = require("./firebase")
 const { signInWithEmailAndPassword, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } = require("firebase/auth")
-const { ref: dbRef, get, child, set, remove } = require("firebase/database")
+const { ref: dbRef, get, child, set, remove, update } = require("firebase/database")
 const { ref: stRef, uploadBytes, uploadString, listAll, getDownloadURL, getStream, getBlob, getBytes } = require("firebase/storage")
 require("dotenv").config()
 
@@ -152,6 +152,19 @@ app.get("/api/user/:userUID/model/:modelName", async (req, res) => {
     await getDownloadURL(downloadLocRef).then((url) => {
         res.json({code: axios.HttpStatusCode.Ok, downloadURL: url})
     }).catch((error) => console.log(error))
+})
+
+app.post("/api/user/:userUID/project/:projName/models", async (req, res) => {
+    const userUID = req.params.userUID
+    const projName = req.params.projName
+
+    const saveModelsLocRef = child(databaseRef, `users/${userUID}/projects/${projName}/room/models`)
+
+    await set(saveModelsLocRef, req.body).then(() => {
+        res.json({code: axios.HttpStatusCode.Ok})
+    }).catch((error) => {
+        res.json({error: error})
+    })
 })
 
 app.listen(process.env.PORT)
